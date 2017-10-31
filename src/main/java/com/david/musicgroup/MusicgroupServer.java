@@ -1,4 +1,4 @@
-package com.david.musicgroup.server;
+package com.david.musicgroup;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
