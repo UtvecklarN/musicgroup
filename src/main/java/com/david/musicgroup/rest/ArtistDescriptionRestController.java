@@ -2,6 +2,7 @@ package com.david.musicgroup.rest;
 
 import com.david.musicgroup.domain.Album;
 import com.david.musicgroup.domain.converartarchives.CoverArtArchiveResponse;
+import com.david.musicgroup.domain.converartarchives.Image;
 import com.david.musicgroup.domain.musicbrainz.MusicBrainzResponse;
 import com.david.musicgroup.domain.musicbrainz.Relation;
 import com.david.musicgroup.domain.musicbrainz.ReleaseGroup;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -51,18 +53,29 @@ public class ArtistDescriptionRestController {
         String url = getUrlFromReleaseGroupId(releaseGroup.getId());
 
         System.out.println(url);
+        List<Image> images = null;
+        try {
+            images = restTemplate.getForObject(url, CoverArtArchiveResponse.class).getImages();
+        } catch (HttpClientErrorException e) {
+            System.out.println(String.format("Cover image not found for album with id '%s' and title '%s'",
+                    releaseGroup.getId(), releaseGroup.getTitle()));
+        }
 
-        CoverArtArchiveResponse coverArtArchiveResponse = restTemplate.getForObject(url, CoverArtArchiveResponse.class);
-        return isNotNull(coverArtArchiveResponse) ?
-                Album.builder()
+        return Album.builder()
                         .withId(releaseGroup.getId())
                         .withTitle(releaseGroup.getTitle())
-                        .withImage(coverArtArchiveResponse.getImage())
-                        .build() : null;
+                        .withImages(getStringImages(images))
+                        .build();
     }
 
-    private boolean isNotNull(CoverArtArchiveResponse coverArtArchiveResponse) {
-        return coverArtArchiveResponse != null;
+    private List<String> getStringImages(List<Image> images) {
+        return isNotNull(images) ? images.stream()
+                .map(Image::toString)
+                .collect(Collectors.toList()) : null;
+    }
+
+    private boolean isNotNull(Object object) {
+        return object != null;
     }
 
     private WikipediaResponse getWikipediaResponse(MusicBrainzResponse musicBrainzResponse) {

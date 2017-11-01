@@ -1,17 +1,19 @@
 package com.david.musicgroup.domain;
 
+import java.util.List;
+
 public class Album {
 
     private String title;
 
     private String id;
 
-    private String image;
+    private List<String> images;
 
     Album(Builder builder) {
         this.title = builder.title;
         this.id = builder.id;
-        this.image = builder.image;
+        this.images = builder.images;
     }
 
     public String getTitle() {
@@ -30,12 +32,12 @@ public class Album {
         this.id = id;
     }
 
-    public String getImage() {
-        return image;
+    public List<String> getImage() {
+        return images;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImage(List<String> image) {
+        this.images = image;
     }
 
     public static Builder builder() {
@@ -45,7 +47,7 @@ public class Album {
     public static class Builder {
         String title;
         String id;
-        String image;
+        List<String> images;
 
         Builder() {
         }
@@ -60,8 +62,8 @@ public class Album {
             return this;
         }
 
-        public Builder withImage(String image) {
-            this.image = image;
+        public Builder withImages(List<String> images) {
+            this.images = images;
             return this;
         }
 

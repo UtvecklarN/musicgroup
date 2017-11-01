@@ -2,16 +2,18 @@ package com.david.musicgroup.domain.converartarchives;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CoverArtArchiveResponse {
 
-    private String image;
+    private List<Image> images;
 
-    public String getImage() {
-        return image;
+    public List<Image> getImages() {
+        return images;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 }
