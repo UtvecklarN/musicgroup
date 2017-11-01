@@ -8,10 +8,10 @@ public class Album {
 
     private String image;
 
-    public Album(String title, String id, String image) {
-        this.title = title;
-        this.id = id;
-        this.image = image;
+    Album(Builder builder) {
+        this.title = builder.title;
+        this.id = builder.id;
+        this.image = builder.image;
     }
 
     public String getTitle() {
@@ -37,4 +37,37 @@ public class Album {
     public void setImage(String image) {
         this.image = image;
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        String title;
+        String id;
+        String image;
+
+        Builder() {
+        }
+
+        public Builder withTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder withId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder withImage(String image) {
+            this.image = image;
+            return this;
+        }
+
+        public Album build() {
+            return new Album(this);
+        }
+    }
 }
+

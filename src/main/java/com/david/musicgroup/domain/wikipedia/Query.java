@@ -13,7 +13,7 @@ public class Query {
         this.pages = pages;
     }
 
-    Map<String, Page> getPages() {
+    public Map<String, Page> getPages() {
         return pages;
     }
 
