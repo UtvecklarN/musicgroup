@@ -1,7 +1,7 @@
 package com.david.musicgroup.rest;
 
-import com.david.musicgroup.response.ArtistDescriptionResponse;
-import com.david.musicgroup.response.GreetingResponse;
+import com.david.musicgroup.domain.GreetingResponse;
+import com.david.musicgroup.domain.musicbrainz.MusicBrainzResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,14 +27,10 @@ public class ArtistDescriptionRestController {
     }
 
     @RequestMapping(method= RequestMethod.GET, path = "/artist/{mbid}")
-    public ArtistDescriptionResponse getArtistDescription(@PathVariable String mbid) {
+    public MusicBrainzResponse getArtistDescription(@PathVariable String mbid) {
         String musicBrainzUrl = getMusicBrainzUrlForMbid(mbid);
-        restTemplate.getForObject()
+        return restTemplate.getForObject(musicBrainzUrl, MusicBrainzResponse.class);
 
-
-
-
-        return new ArtistDescriptionResponse();
     }
 
     private String getMusicBrainzUrlForMbid(String mbid) {

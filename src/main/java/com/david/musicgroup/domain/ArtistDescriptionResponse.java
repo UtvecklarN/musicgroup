@@ -1,4 +1,4 @@
-package com.david.musicgroup.response;
+package com.david.musicgroup.domain;
 
 public class ArtistDescriptionResponse {
 
