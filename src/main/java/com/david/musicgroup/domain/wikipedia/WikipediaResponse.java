@@ -14,4 +14,11 @@ public class WikipediaResponse {
     public void setQuery(Query query) {
         this.query = query;
     }
+
+    @Override
+    public String toString() {
+        return "WikipediaResponse{" +
+                "query=" + query +
+                '}';
+    }
 }

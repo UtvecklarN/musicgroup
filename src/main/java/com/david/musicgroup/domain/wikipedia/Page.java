@@ -16,4 +16,11 @@ public class Page {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Page{" +
+                "description='" + description + '\'' +
+                '}';
+    }
 }

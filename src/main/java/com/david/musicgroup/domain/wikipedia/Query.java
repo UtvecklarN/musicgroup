@@ -16,4 +16,11 @@ public class Query {
     Map<String, Page> getPages() {
         return pages;
     }
+
+    @Override
+    public String toString() {
+        return "Query{" +
+                "pages=" + pages +
+                '}';
+    }
 }
