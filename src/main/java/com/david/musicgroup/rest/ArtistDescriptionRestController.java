@@ -21,8 +21,6 @@ import java.util.concurrent.ExecutionException;
 @RestController
 public class ArtistDescriptionRestController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ArtistDescriptionRestController.class);
-
     private static HashMap<String, ArtistDescription> cache = new HashMap<>();
 
     private final ArtistDescriptionService artistDescriptionService;
