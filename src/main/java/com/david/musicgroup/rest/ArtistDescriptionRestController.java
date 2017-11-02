@@ -67,7 +67,7 @@ public class ArtistDescriptionRestController {
             return ResponseEntity.ok(artistDescription);
 
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // HÄR BLIR WEBSIDAN BLANK, STATUSKOD VISAS EJ
+            return ResponseEntity.badRequest().body(null);  //HÄR BLIR WEBSIDAN BLANK, STATUSKOD VISAS EJ... Sätter jag e i bodyn så printas html...
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Artist not found for mbid '%S'", mbid)); HÄR PRINTAR DEN UT MIN STRÄNG MEN DEN PRESENTERAS INTE I JSON, STATUSKOD VISAS EJ
         } catch (HttpServerErrorException | InterruptedException | ExecutionException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
