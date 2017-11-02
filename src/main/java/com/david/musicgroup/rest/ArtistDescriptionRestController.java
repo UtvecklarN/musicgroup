@@ -8,6 +8,7 @@ import com.david.musicgroup.domain.musicbrainz.MusicBrainzResponse;
 import com.david.musicgroup.domain.musicbrainz.Relation;
 import com.david.musicgroup.domain.musicbrainz.ReleaseGroup;
 import com.david.musicgroup.domain.wikipedia.WikipediaResponse;
+import com.david.musicgroup.util.UrlUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,6 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/artist")
 public class ArtistDescriptionRestController {
 
     private static ExecutorService executorService = Executors.newCachedThreadPool();
@@ -38,15 +38,6 @@ public class ArtistDescriptionRestController {
     private RestTemplate restTemplate = new RestTemplate();
 
     private final String WIKIPEDIA = "wikipedia";
-
-    private static final String MUSIC_BRAINZ_REQUEST_TEMPLATE = "http://musicbrainz.org/ws/2/artist/%s?" +
-            "&fmt=json" +
-            "&inc=url-rels+release-groups";
-
-    private static final String WIKIPEDIA_REQUEST_TEMPLATE = "https://en.wikipedia.org/w/api.php" +
-            "?action=query&format=json&prop=extracts&exintro=true&redirects=true&titles=%s";
-
-    private static final String COVER_ART_ARCHIVE_REQUEST_TEMPLATE = "http://coverartarchive.org/release-group/%s";
 
     /**
      * Method that handles HTTP GET requests that fetches Wikipedia description and list of album information by an
@@ -76,7 +67,8 @@ public class ArtistDescriptionRestController {
             return ResponseEntity.ok(artistDescription);
 
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // HÄR BLIR WEBSIDAN BLANK, STATUSKOD VISAS EJ
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Artist not found for mbid '%S'", mbid)); HÄR PRINTAR DEN UT MIN STRÄNG MEN DEN PRESENTERAS INTE I JSON, STATUSKOD VISAS EJ
         } catch (HttpServerErrorException | InterruptedException | ExecutionException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -101,7 +93,7 @@ public class ArtistDescriptionRestController {
                 .filter(x -> WIKIPEDIA.equals(x.getType()))
                 .findFirst();
         if (wikipediaRelation.isPresent()) {
-            String url = ArtistDescriptionRestController.this.getWikipediaUrlFromType(wikipediaRelation.get().getUrl().getWikipediaIdFromResource());
+            String url = UrlUtil.getWikipediaUrlFromType(wikipediaRelation.get().getUrl().getWikipediaIdFromResource());
             try {
                 WikipediaResponse response = restTemplate.getForObject(url, WikipediaResponse.class);
                 return response.getDescription();
@@ -116,7 +108,7 @@ public class ArtistDescriptionRestController {
     }
 
     private Album toAlbum(ReleaseGroup releaseGroup) {
-        String url = getCoverArtArchiveUrlFromId(releaseGroup.getId());
+        String url = UrlUtil.getCoverArtArchiveUrlFromId(releaseGroup.getId());
         List<Image> images = null;
 
         try {
@@ -143,19 +135,8 @@ public class ArtistDescriptionRestController {
     }
 
     private MusicBrainzResponse getMusicBrainzResponse(String mbid) {
-        String musicBrainzUrl = getMusicBrainzUrlFromMbid(mbid);
+        String musicBrainzUrl = UrlUtil.getMusicBrainzUrlFromMbid(mbid);
         return restTemplate.getForObject(musicBrainzUrl, MusicBrainzResponse.class);
     }
 
-    private String getMusicBrainzUrlFromMbid(String mbid) {
-        return String.format(MUSIC_BRAINZ_REQUEST_TEMPLATE, mbid);
-    }
-
-    private String getWikipediaUrlFromType(String type) {
-        return String.format(WIKIPEDIA_REQUEST_TEMPLATE, type);
-    }
-
-    private String getCoverArtArchiveUrlFromId(String id) {
-        return String.format(COVER_ART_ARCHIVE_REQUEST_TEMPLATE, id);
-    }
 }
