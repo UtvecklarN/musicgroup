@@ -9,6 +9,8 @@ import com.david.musicgroup.domain.musicbrainz.Relation;
 import com.david.musicgroup.domain.musicbrainz.ReleaseGroup;
 import com.david.musicgroup.domain.wikipedia.WikipediaResponse;
 import com.david.musicgroup.util.UrlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 
 @RestController
 public class ArtistDescriptionRestController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArtistDescriptionRestController.class);
 
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -67,8 +71,7 @@ public class ArtistDescriptionRestController {
             return ResponseEntity.ok(artistDescription);
 
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.badRequest().body(null);  //HÄR BLIR WEBSIDAN BLANK, STATUSKOD VISAS EJ... Sätter jag e i bodyn så printas html...
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Artist not found for mbid '%S'", mbid)); HÄR PRINTAR DEN UT MIN STRÄNG MEN DEN PRESENTERAS INTE I JSON, STATUSKOD VISAS EJ
+            return ResponseEntity.badRequest().body(null);
         } catch (HttpServerErrorException | InterruptedException | ExecutionException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -98,8 +101,8 @@ public class ArtistDescriptionRestController {
                 WikipediaResponse response = restTemplate.getForObject(url, WikipediaResponse.class);
                 return response.getDescription();
             } catch (Exception e) {
-                System.out.println(String.format("Could not retrieve wikipedia description with id '%s'",
-                        wikipediaRelation.get().getUrl().getWikipediaIdFromResource()));
+                LOGGER.info("Could not retrieve wikipedia description with id '{}'",
+                        wikipediaRelation.get().getUrl().getWikipediaIdFromResource());
                 return null;
             }
         } else {
@@ -114,11 +117,11 @@ public class ArtistDescriptionRestController {
         try {
             images = restTemplate.getForObject(url, CoverArtArchiveResponse.class).getImages();
         } catch (HttpClientErrorException e) {
-            System.out.println(String.format("Cover image not found for album with id '%s' and title '%s'",
-                    releaseGroup.getId(), releaseGroup.getTitle()));
+            LOGGER.info("Cover image not found for album with id '{}' and title '{}'",
+                    releaseGroup.getId(), releaseGroup.getTitle());
         } catch (Exception e) {
-            System.out.println(String.format("Could not retrieve image with id '%s' and title '%s'",
-                    releaseGroup.getId(), releaseGroup.getTitle()));
+            LOGGER.info("Could not retrieve image with id '{}' and title '{}'",
+                    releaseGroup.getId(), releaseGroup.getTitle());
         }
 
         return Album.builder()
@@ -138,5 +141,4 @@ public class ArtistDescriptionRestController {
         String musicBrainzUrl = UrlUtil.getMusicBrainzUrlFromMbid(mbid);
         return restTemplate.getForObject(musicBrainzUrl, MusicBrainzResponse.class);
     }
-
 }

@@ -10,6 +10,9 @@ public class Album {
 
     private List<String> images;
 
+    public Album() {
+    }
+
     Album(Builder builder) {
         this.title = builder.title;
         this.id = builder.id;

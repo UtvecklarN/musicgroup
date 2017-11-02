@@ -2,7 +2,7 @@ package com.david.musicgroup.domain.converartarchives;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Image {
 
     private String image;

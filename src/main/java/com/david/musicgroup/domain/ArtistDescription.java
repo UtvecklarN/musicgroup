@@ -10,6 +10,9 @@ public class ArtistDescription {
 
     private List<Album> albums;
 
+    public ArtistDescription() {
+    }
+
     ArtistDescription(ArtistDescription.Builder builder) {
         this.mbid = builder.mbid;
         this.description = builder.description;
